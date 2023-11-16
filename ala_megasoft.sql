@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Gegenereerd op: 16 nov 2023 om 10:48
--- Serverversie: 10.4.24-MariaDB
--- PHP-versie: 8.1.6
+-- Generation Time: Nov 16, 2023 at 01:33 PM
+-- Server version: 10.4.21-MariaDB
+-- PHP Version: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Tabelstructuur voor tabel `addresses`
+-- Table structure for table `addresses`
 --
 
 CREATE TABLE `addresses` (
@@ -37,10 +37,18 @@ CREATE TABLE `addresses` (
   `country` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `addresses`
+--
+
+INSERT INTO `addresses` (`ID`, `street`, `nr`, `add`, `zip`, `place`, `country`) VALUES
+(1, 'streetname', 12, 'Where am i?', '1111AA', 'Groningen', 'Netherlands'),
+(2, 'Szwwetmaan', 23, 'Here is where?', '2222AA', 'Zweman', 'Canada');
+
 -- --------------------------------------------------------
 
 --
--- Tabelstructuur voor tabel `persons`
+-- Table structure for table `persons`
 --
 
 CREATE TABLE `persons` (
@@ -51,10 +59,18 @@ CREATE TABLE `persons` (
   `ismale` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `persons`
+--
+
+INSERT INTO `persons` (`ID`, `firstname`, `infix`, `lastname`, `ismale`) VALUES
+(1, 'John', '', 'Doe', 1),
+(2, 'Johnny', 'van', 'Doe', 0);
+
 -- --------------------------------------------------------
 
 --
--- Tabelstructuur voor tabel `personsadresses`
+-- Table structure for table `personsadresses`
 --
 
 CREATE TABLE `personsadresses` (
@@ -65,23 +81,31 @@ CREATE TABLE `personsadresses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Indexen voor geëxporteerde tabellen
+-- Dumping data for table `personsadresses`
+--
+
+INSERT INTO `personsadresses` (`ID`, `personsID`, `addressesID`, `ismain`) VALUES
+(1, 1, 1, 0),
+(2, 2, 2, 0);
+
+--
+-- Indexes for dumped tables
 --
 
 --
--- Indexen voor tabel `addresses`
+-- Indexes for table `addresses`
 --
 ALTER TABLE `addresses`
   ADD PRIMARY KEY (`ID`);
 
 --
--- Indexen voor tabel `persons`
+-- Indexes for table `persons`
 --
 ALTER TABLE `persons`
   ADD PRIMARY KEY (`ID`);
 
 --
--- Indexen voor tabel `personsadresses`
+-- Indexes for table `personsadresses`
 --
 ALTER TABLE `personsadresses`
   ADD PRIMARY KEY (`ID`),
@@ -89,37 +113,37 @@ ALTER TABLE `personsadresses`
   ADD KEY `personsadresses_ibfk_2` (`personsID`);
 
 --
--- AUTO_INCREMENT voor geëxporteerde tabellen
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT voor een tabel `addresses`
+-- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT voor een tabel `persons`
+-- AUTO_INCREMENT for table `persons`
 --
 ALTER TABLE `persons`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT voor een tabel `personsadresses`
+-- AUTO_INCREMENT for table `personsadresses`
 --
 ALTER TABLE `personsadresses`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- Beperkingen voor geëxporteerde tabellen
+-- Constraints for dumped tables
 --
 
 --
--- Beperkingen voor tabel `personsadresses`
+-- Constraints for table `personsadresses`
 --
 ALTER TABLE `personsadresses`
-  ADD CONSTRAINT `personsadresses_ibfk_1` FOREIGN KEY (`addressesID`) REFERENCES `addresses` (`id`),
-  ADD CONSTRAINT `personsadresses_ibfk_2` FOREIGN KEY (`personsID`) REFERENCES `persons` (`id`);
+  ADD CONSTRAINT `personsadresses_ibfk_1` FOREIGN KEY (`addressesID`) REFERENCES `addresses` (`ID`),
+  ADD CONSTRAINT `personsadresses_ibfk_2` FOREIGN KEY (`personsID`) REFERENCES `persons` (`ID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
