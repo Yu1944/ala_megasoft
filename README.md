@@ -1,4 +1,4 @@
-# MegaSoft
+# ala_megasoft
 
 ## Description
 A short description of your project and what it does.
