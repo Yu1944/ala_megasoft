@@ -23,3 +23,8 @@ A short description of your project and what it does.
 3. Make your changes and commit: `git commit -m 'Add feature'`
 4. Push to the branch: `git push origin feature-name`
 5. Submit a pull request
+
+## info pdf viewer
+
+https://www.geeksforgeeks.org/how-to-generate-pdf-file-using-php/
+https://www.geeksforgeeks.org/how-to-make-pdf-file-downloadable-in-html-link-using-php/
