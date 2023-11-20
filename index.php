@@ -109,6 +109,8 @@ echo "</form>";
                 if ($person['country'] !== 'Netherlands' && $person['country'] !== 'Nederlands') {
                     $pdf->Cell(60, 10, $person['country'], 0, 1);
                 }
+                // Voeg een extra lege regel toe na elke persoon
+                $pdf->Ln();
             }
 
             // Output the generated PDF
