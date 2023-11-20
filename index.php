@@ -67,6 +67,7 @@ echo "<br>";
 echo "<input type='submit' value='Submit'>";
 echo "</form>";
 
+
 // Display the selected people's information
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_people'])) {
     $selectedPeople = $_POST['selected_people'];
@@ -95,4 +96,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_people'])) {
     }
     
 ?>
+
+<?php
+if (isset($_GET['download'])) {
+    ob_end_clean();
+    require('fpdf/fpdf.php');
+
+    // Instantiate and use the FPDF class
+    $pdf = new FPDF();
+
+    // Add a new page
+    $pdf->AddPage();
+
+    // Set the font for the text
+    $pdf->SetFont('Arial', 'B', 18);
+
+    // Prints a cell with given text
+    $pdf->Cell(60, 20, $person['firstname'] . ' ' . $person['infix'] . ' ' . $person['lastname'], 0, 1);
+    $pdf->Cell(60, 20, $person['street'] . ' ' . $person['nr'], 0, 1);
+    $pdf->Cell(60, 20, $person['zip'] . ' ' . $person['place'], 0, 1);
+    $pdf->Cell(60, 20, $person['country'], 0, 1);
+    
+    // Output the generated PDF
+    $pdf->Output();
+
+} else {
+    ?>
+            <?php echo '<a href="?download=true">
+        <input type="submit" value="Download PDF Now"/>
+      </a>'; ?>
+<?php
+}
+?>
+
 
