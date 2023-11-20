@@ -10,18 +10,19 @@ include "db.php";
     <title>homepagina</title>
 </head>
 <body>
-    <form action="">
-<label for="search">Search:</label>
-    <input type="text" id="search" name="search" placeholder="Enter First or Last name" required>
-    <button type="submit">Search</button>
+    <form action="#" method="post"> <!-- Added method="post" to the form -->
+        <label for="search">Search:</label>
+        <input type="text" id="search" name="search" placeholder="Enter First or Last name" required>
+        <button type="submit">Search</button>
     </form>
 </body>
 </html>
+
 <?php
-try{
+try {
     // Check if a search term is provided and sanitize it
-    $searchTerm = isset($_GET['search']) ? htmlspecialchars($_GET['search'], ENT_QUOTES, 'UTF-8') : '';
-    
+    $searchTerm = isset($_POST['search']) ? htmlspecialchars($_POST['search'], ENT_QUOTES, 'UTF-8') : '';
+
     // Prepare and execute a query to retrieve information based on the search term
     $query = $conn->prepare("
         SELECT 
@@ -48,72 +49,71 @@ try{
             OR addresses.place LIKE :search 
             OR addresses.country LIKE :search
     ");
-    
+
     $query->bindValue(':search', "%$searchTerm%", PDO::PARAM_STR);
     $query->execute();
     // Fetch all the results
     $people_data = $query->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Print the form and checkboxes
-echo "<form action='#' method='post'>";
-echo "<label>Select people:</label>";
+    echo "<form action='#' method='post'>";
+    echo "<label>Select people:</label>";
 
-foreach ($people_data as $person) {
-    $fullName = "{$person['firstname']} {$person['infix']} {$person['lastname']}";
-    echo "<div><input type='checkbox' name='selected_people[]' value='$fullName'>$fullName</div>";
-}
+    foreach ($people_data as $person) {
+        $fullName = "{$person['firstname']} {$person['infix']} {$person['lastname']}";
+        echo "<div><input type='checkbox' name='selected_people[]' value='$fullName'>$fullName</div>";
+    }
 
-echo "<br>";
-echo "<input type='submit' value='Submit'>";
-echo "</form>";
+    echo "<br>";
+    echo "<input type='submit' name='submit_form' value='Submit'>"; // Added name attribute to the submit button
+    echo "</form>";
 
+    // Display the selected people's information
+    if (isset($_POST['submit_form']) && isset($_POST['selected_people'])) {
+        $selectedPeople = $_POST['selected_people'];
+        $selectedPeopleInfo = array();
 
-// Display the selected people's information
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_people'])) {
-    $selectedPeople = $_POST['selected_people'];
-
-    // Loop through selected people
-    foreach ($selectedPeople as $selectedPerson) {
-        // Find the selected person in the array
-        foreach ($people_data as $person) {
-            $fullName = "{$person['firstname']} {$person['infix']} {$person['lastname']}";
-            if ($fullName == $selectedPerson) {
-                if (isset($_GET['download'])) {
-                    ob_end_clean();
-                    require('fpdf/fpdf.php');
-                
-                    // Instantiate and use the FPDF class
-                    $pdf = new FPDF();
-                
-                    // Add a new page
-                    $pdf->AddPage();
-                
-                    // Set the font for the text
-                    $pdf->SetFont('Arial', 'B', 18);
-                
-                    // Prints a cell with given text
-                    $pdf->Cell(60, 20, $person['firstname'] . ' ' . $person['infix'] . ' ' . $person['lastname'], 0, 1);
-                    $pdf->Cell(60, 20, $person['street'] . ' ' . $person['nr'], 0, 1);
-                    $pdf->Cell(60, 20, $person['zip'] . ' ' . $person['place'], 0, 1);
-                    if($person['country'] !== 'Netherlands' && $person['country'] !== 'Nederlands'){
-                        $pdf->Cell(60, 20, $person['country'], 0, 1);
-                    }
-                    // Output the generated PDF
-                    $pdf->Output();
-                
-                } else {
-                    ?>
-                            <?php echo '<a href="?download=true">
-                        <input type="submit" value="Download PDF Now"/>
-                      </a>'; ?>
-                <?php
+        // Loop through selected people
+        foreach ($selectedPeople as $selectedPerson) {
+            // Loop through people_data to find the selected person
+            foreach ($people_data as $person) {
+                $fullName = "{$person['firstname']} {$person['infix']} {$person['lastname']}";
+                // Check if the current person's full name matches the selected person
+                if ($fullName === $selectedPerson) {
+                    $selectedPeopleInfo[] = $person;
                 }
             }
         }
+
+        // Generate the PDF after processing all selected people
+        if (isset($_GET['download']) && !empty($selectedPeopleInfo)) {
+            ob_end_clean();
+            require('fpdf/fpdf.php');
+
+            // Instantiate and use the FPDF class
+            $pdf = new FPDF();
+
+            // Add a new page
+            $pdf->AddPage();
+
+            // Set the font for the text
+            $pdf->SetFont('Arial', '', 18);
+
+            // Loop through selected people's information and print in the PDF
+            foreach ($selectedPeopleInfo as $person) {
+                $pdf->Cell(60, 10, $person['firstname'] . ' ' . $person['infix'] . ' ' . $person['lastname'], 0, 1);
+                $pdf->Cell(60, 10, $person['street'] . ' ' . $person['nr'], 0, 1);
+                $pdf->Cell(60, 10, $person['zip'] . ' ' . $person['place'], 0, 1);
+                if ($person['country'] !== 'Netherlands' && $person['country'] !== 'Nederlands') {
+                    $pdf->Cell(60, 10, $person['country'], 0, 1);
+                }
+            }
+
+            // Output the generated PDF
+            $pdf->Output();
+        }
     }
-}  
-    } catch (PDOException $e) {
+} catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
-    }
-    
+}
 ?>
