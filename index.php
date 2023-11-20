@@ -115,8 +115,9 @@ if (isset($_GET['download'])) {
     $pdf->Cell(60, 20, $person['firstname'] . ' ' . $person['infix'] . ' ' . $person['lastname'], 0, 1);
     $pdf->Cell(60, 20, $person['street'] . ' ' . $person['nr'], 0, 1);
     $pdf->Cell(60, 20, $person['zip'] . ' ' . $person['place'], 0, 1);
-    $pdf->Cell(60, 20, $person['country'], 0, 1);
-    
+    if($person['country'] !== 'Netherlands' && $person['country'] !== 'Nederlands'){
+        $pdf->Cell(60, 20, $person['country'], 0, 1);
+    }
     // Output the generated PDF
     $pdf->Output();
 
