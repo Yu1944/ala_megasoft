@@ -50,23 +50,25 @@ try {
             OR addresses.country LIKE :search
     ");
 
+
     $query->bindValue(':search', "%$searchTerm%", PDO::PARAM_STR);
     $query->execute();
     // Fetch all the results
     $people_data = $query->fetchAll(PDO::FETCH_ASSOC);
 
     // Print the form and checkboxes
-    echo "<form action='#' method='post'>";
-    echo "<label>Select people:</label>";
+   // Print the form and checkboxes
+echo "<form action='?download=true' method='post'>";
+echo "<label>Select people:</label>";
 
-    foreach ($people_data as $person) {
-        $fullName = "{$person['firstname']} {$person['infix']} {$person['lastname']}";
-        echo "<div><input type='checkbox' name='selected_people[]' value='$fullName'>$fullName</div>";
-    }
+foreach ($people_data as $person) {
+    $fullName = "{$person['firstname']} {$person['infix']} {$person['lastname']}";
+    echo "<div><input type='checkbox' name='selected_people[]' value='$fullName'>$fullName</div>";
+}
 
-    echo "<br>";
-    echo "<input type='submit' name='submit_form' value='Submit'>"; // Added name attribute to the submit button
-    echo "</form>";
+echo "<br>";
+echo "<input type='submit' name='submit_form' value='Submit'>"; // Added name attribute to the submit button
+echo "</form>";
 
     // Display the selected people's information
     if (isset($_POST['submit_form']) && isset($_POST['selected_people'])) {
