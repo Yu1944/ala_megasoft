@@ -78,15 +78,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_people'])) {
         foreach ($people_data as $person) {
             $fullName = "{$person['firstname']} {$person['infix']} {$person['lastname']}";
             if ($fullName == $selectedPerson) {
-                // Print the selected person's information
-                echo "<table border='1'>";
-                echo "<tr><td>Name</td><td>{$person['firstname']} {$person['infix']} {$person['lastname']}</td></tr>";
-                echo "<tr><td>Address</td><td>{$person['street']} {$person['nr']}</td></tr>";
-                echo "<tr><td>Postal Code</td><td>{$person['zip']}</td></tr>";
-                echo "<tr><td>Place</td><td>{$person['place']}</td></tr>";
-                echo "<tr><td>Country</td><td>{$person['country']}</td></tr>";
-                echo "</table>";
-                echo "<br>";
+                if (isset($_GET['download'])) {
+                    ob_end_clean();
+                    require('fpdf/fpdf.php');
+                
+                    // Instantiate and use the FPDF class
+                    $pdf = new FPDF();
+                
+                    // Add a new page
+                    $pdf->AddPage();
+                
+                    // Set the font for the text
+                    $pdf->SetFont('Arial', 'B', 18);
+                
+                    // Prints a cell with given text
+                    $pdf->Cell(60, 20, $person['firstname'] . ' ' . $person['infix'] . ' ' . $person['lastname'], 0, 1);
+                    $pdf->Cell(60, 20, $person['street'] . ' ' . $person['nr'], 0, 1);
+                    $pdf->Cell(60, 20, $person['zip'] . ' ' . $person['place'], 0, 1);
+                    if($person['country'] !== 'Netherlands' && $person['country'] !== 'Nederlands'){
+                        $pdf->Cell(60, 20, $person['country'], 0, 1);
+                    }
+                    // Output the generated PDF
+                    $pdf->Output();
+                
+                } else {
+                    ?>
+                            <?php echo '<a href="?download=true">
+                        <input type="submit" value="Download PDF Now"/>
+                      </a>'; ?>
+                <?php
+                }
             }
         }
     }
@@ -96,38 +117,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_people'])) {
     }
     
 ?>
-
-<?php
-if (isset($_GET['download'])) {
-    ob_end_clean();
-    require('fpdf/fpdf.php');
-
-    // Instantiate and use the FPDF class
-    $pdf = new FPDF();
-
-    // Add a new page
-    $pdf->AddPage();
-
-    // Set the font for the text
-    $pdf->SetFont('Arial', 'B', 18);
-
-    // Prints a cell with given text
-    $pdf->Cell(60, 20, $person['firstname'] . ' ' . $person['infix'] . ' ' . $person['lastname'], 0, 1);
-    $pdf->Cell(60, 20, $person['street'] . ' ' . $person['nr'], 0, 1);
-    $pdf->Cell(60, 20, $person['zip'] . ' ' . $person['place'], 0, 1);
-    if($person['country'] !== 'Netherlands' && $person['country'] !== 'Nederlands'){
-        $pdf->Cell(60, 20, $person['country'], 0, 1);
-    }
-    // Output the generated PDF
-    $pdf->Output();
-
-} else {
-    ?>
-            <?php echo '<a href="?download=true">
-        <input type="submit" value="Download PDF Now"/>
-      </a>'; ?>
-<?php
-}
-?>
-
-
